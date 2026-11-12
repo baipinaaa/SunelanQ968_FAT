@@ -176,6 +176,7 @@
 
 .method public startTest()V
     .locals 1
+    :try_start_0
 
     .line 28
     new-instance v0, Lcom/sprd/validationtools/background/BackgroundSimTest$1;
@@ -186,6 +187,14 @@
     invoke-virtual {v0}, Lcom/sprd/validationtools/background/BackgroundSimTest$1;->start()V
 
     .line 57
+    
+
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
+
+    return-void
+
+    :catch_0
     return-void
 .end method
 

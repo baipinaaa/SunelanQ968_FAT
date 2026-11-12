@@ -162,7 +162,7 @@
 
     .line 50
     .local v0, "runtime":Ljava/lang/Runtime;
-    invoke-virtual {v0, p1}, Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;
+    invoke-static {p1}, Lcom/sprd/validationtools/Sh;->run(Ljava/lang/String;)Ljava/lang/String;
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 

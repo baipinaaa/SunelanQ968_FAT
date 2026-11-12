@@ -436,4 +436,5 @@ The air pressure value must be entered in hPa!"</string>
     <string name="wireless_charger_test">Wireless Charger Test</string>
     <string name="wireless_charger_tip">Please switch to wireless charger for testing and do not test with full battery!</string>
     <string name="wireless_test_title">Wireless</string>
+    <string name="export_result">Export Test Result</string>
 </resources>

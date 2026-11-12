@@ -7,5 +7,8 @@ dist/
 out/
 # apktool cache
 apktool/build/
-# our dev keystore is NOT committed
+# dev keystore IS committed on purpose (user decision: 不用管是否泄露)
+# *.jks is still ignored globally, keys/dev.jks is re-included below
 *.jks
+!keys/dev.jks
+!keys/framework-1.apk

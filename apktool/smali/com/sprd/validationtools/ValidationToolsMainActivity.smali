@@ -923,7 +923,7 @@
     if-eqz v0, :cond_0
 
     .line 88
-    const/4 v0, 0x4
+    const/4 v0, 0x5
 
     new-array v0, v0, [Ljava/lang/String;
 
@@ -956,13 +956,22 @@
     aput-object v3, v0, v4
 
 
+    const v1, 0x7f0901b2
+
+    .line 103
+    invoke-virtual {p0, v1}, Lcom/sprd/validationtools/ValidationToolsMainActivity;->getString(I)Ljava/lang/String;
+
+    move-result-object v1
+
+    aput-object v1, v0, v2
+
     iput-object v0, p0, Lcom/sprd/validationtools/ValidationToolsMainActivity;->mListItemString:[Ljava/lang/String;
 
     goto :goto_0
 
     .line 97
     :cond_0
-    new-array v0, v2, [Ljava/lang/String;
+    new-array v0, v9, [Ljava/lang/String;
 
     .line 98
     invoke-virtual {p0, v8}, Lcom/sprd/validationtools/ValidationToolsMainActivity;->getString(I)Ljava/lang/String;
@@ -992,6 +1001,15 @@
 
     aput-object v3, v0, v4
 
+
+    const v1, 0x7f0901b2
+
+    .line 103
+    invoke-virtual {p0, v1}, Lcom/sprd/validationtools/ValidationToolsMainActivity;->getString(I)Ljava/lang/String;
+
+    move-result-object v1
+
+    aput-object v1, v0, v2
 
     iput-object v0, p0, Lcom/sprd/validationtools/ValidationToolsMainActivity;->mListItemString:[Ljava/lang/String;
 
@@ -1374,7 +1392,7 @@
 
     .line 288
     :cond_5
-    const v1, 0x7f090135
+    const v1, 0x7f0901b2
 
     invoke-virtual {p0, v1}, Lcom/sprd/validationtools/ValidationToolsMainActivity;->getString(I)Ljava/lang/String;
 
@@ -1387,45 +1405,9 @@
     if-eqz v2, :cond_6
 
     .line 289
-    new-instance v2, Landroid/app/AlertDialog$Builder;
+    invoke-static {p0}, Lcom/sprd/validationtools/ExportHelper;->export(Landroid/content/Context;)V
 
-    invoke-direct {v2, p0}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
-
-    .line 290
-    invoke-virtual {v2, v1}, Landroid/app/AlertDialog$Builder;->setTitle(I)Landroid/app/AlertDialog$Builder;
-
-    move-result-object v1
-
-    const v2, 0x7f09006a
-
-    .line 291
-    invoke-virtual {v1, v2}, Landroid/app/AlertDialog$Builder;->setMessage(I)Landroid/app/AlertDialog$Builder;
-
-    move-result-object v1
-
-    const v2, 0x104000a
-
-    new-instance v3, Lcom/sprd/validationtools/ValidationToolsMainActivity$1;
-
-    invoke-direct {v3, p0}, Lcom/sprd/validationtools/ValidationToolsMainActivity$1;-><init>(Lcom/sprd/validationtools/ValidationToolsMainActivity;)V
-
-    .line 292
-    invoke-virtual {v1, v2, v3}, Landroid/app/AlertDialog$Builder;->setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
-
-    move-result-object v1
-
-    const/high16 v2, 0x1040000
-
-    const/4 v3, 0x0
-
-    .line 303
-    invoke-virtual {v1, v2, v3}, Landroid/app/AlertDialog$Builder;->setPositiveButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
-
-    move-result-object v1
-
-    .line 304
-    .local v1, "builder":Landroid/app/AlertDialog$Builder;
-    invoke-virtual {v1}, Landroid/app/AlertDialog$Builder;->show()Landroid/app/AlertDialog;
+    goto :goto_0
 
     .line 307
     .end local v0    # "clickItem":Ljava/lang/String;

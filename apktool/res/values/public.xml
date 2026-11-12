@@ -848,4 +848,5 @@
     <public type="style" name="Text_Title" id="0x7f0a0006" />
     <public type="style" name="itemTextKeyStyle" id="0x7f0a0007" />
     <public type="style" name="itemTextValueStyle" id="0x7f0a0008" />
+    <public type="string" name="export_result" id="0x7f0901b2" />
 </resources>

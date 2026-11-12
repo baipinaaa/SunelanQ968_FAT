@@ -389,4 +389,5 @@
     <string name="wireless_charger_test">无线充电测试</string>
     <string name="wireless_charger_tip">请切换为无线充电器，且不要在电池满电的条件下进行测试！</string>
     <string name="wireless_test_title">无线测试</string>
+    <string name="export_result">导出测试结果</string>
 </resources>

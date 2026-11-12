@@ -227,6 +227,8 @@
 
 .field public static final face_msg_text:I = 0x7f090069
 
+.field public static final export_result:I = 0x7f0901b2
+
 .field public static final factory_reset_message:I = 0x7f09006a
 
 .field public static final fast_charger_tip:I = 0x7f09006b

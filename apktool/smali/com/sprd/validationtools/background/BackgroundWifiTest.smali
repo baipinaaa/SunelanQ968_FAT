@@ -175,6 +175,7 @@
 
 .method public startTest()V
     .locals 3
+    :try_start_0
 
     .line 34
     new-instance v0, Lcom/sprd/validationtools/background/BackgroundWifiTest$1;
@@ -209,6 +210,14 @@
     invoke-virtual {v0, v1}, Lcom/sprd/validationtools/utils/WifiTestUtil;->startTest(Landroid/content/Context;)V
 
     .line 46
+    
+
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
+
+    return-void
+
+    :catch_0
     return-void
 .end method
 

@@ -950,7 +950,7 @@
 
     const-string v1, "on"
 
-    invoke-static {v0, v1}, Landroid/os/SystemProperties;->set(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v0, v1}, Lcom/sprd/validationtools/Sh;->setProp(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 96
     return-void
@@ -964,7 +964,7 @@
 
     const-string v1, "off"
 
-    invoke-static {v0, v1}, Landroid/os/SystemProperties;->set(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v0, v1}, Lcom/sprd/validationtools/Sh;->setProp(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 119
     invoke-super {p0}, Lcom/sprd/validationtools/BaseActivity;->onDestroy()V
