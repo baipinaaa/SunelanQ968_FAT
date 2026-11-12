@@ -451,7 +451,7 @@
     :goto_5
     iget-object v3, p0, Lcom/sprd/validationtools/itemstest/telephony/SIMCardTestActivity;->mTelMgr:Landroid/telephony/TelephonyManager;
 
-    invoke-virtual {v3, p1}, Landroid/telephony/TelephonyManager;->getDeviceId(I)Ljava/lang/String;
+    invoke-static {v3, p1}, Lcom/sprd/validationtools/Safe;->deviceId(Landroid/telephony/TelephonyManager;I)Ljava/lang/String;
 
     move-result-object v3
 
@@ -460,7 +460,7 @@
     .line 135
     iget-object v3, p0, Lcom/sprd/validationtools/itemstest/telephony/SIMCardTestActivity;->mTelMgr:Landroid/telephony/TelephonyManager;
 
-    invoke-virtual {v3, p1}, Landroid/telephony/TelephonyManager;->getDeviceId(I)Ljava/lang/String;
+    invoke-static {v3, p1}, Lcom/sprd/validationtools/Safe;->deviceId(Landroid/telephony/TelephonyManager;I)Ljava/lang/String;
 
     move-result-object v3
 

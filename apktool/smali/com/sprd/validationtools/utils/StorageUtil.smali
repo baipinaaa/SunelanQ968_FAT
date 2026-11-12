@@ -634,6 +634,7 @@
     move-result-object v2
     :try_end_0
     .catch Landroid/os/RemoteException; {:try_start_0 .. :try_end_0} :catch_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
     .line 103
     .local v2, "vols":Ljava/util/List;, "Ljava/util/List<Landroid/os/storage/VolumeInfo;>;"
@@ -686,13 +687,5 @@
     .line 101
     .end local v2    # "vols":Ljava/util/List;, "Ljava/util/List<Landroid/os/storage/VolumeInfo;>;"
     :catch_0
-    move-exception v2
-
-    .line 102
-    .local v2, "e":Landroid/os/RemoteException;
-    invoke-virtual {v2}, Landroid/os/RemoteException;->rethrowFromSystemServer()Ljava/lang/RuntimeException;
-
-    move-result-object v3
-
-    throw v3
+    return-object v0
 .end method

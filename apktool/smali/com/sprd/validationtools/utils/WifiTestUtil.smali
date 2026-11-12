@@ -348,7 +348,7 @@
 
     iget-object v2, p0, Lcom/sprd/validationtools/utils/WifiTestUtil;->mWifiManager:Landroid/net/wifi/WifiManager;
 
-    invoke-virtual {v2}, Landroid/net/wifi/WifiManager;->isWifiEnabled()Z
+    invoke-static {v2}, Lcom/sprd/validationtools/Safe;->wifiEnabled(Landroid/net/wifi/WifiManager;)Z
 
     move-result v2
 
@@ -365,7 +365,7 @@
     .line 72
     iget-object v0, p0, Lcom/sprd/validationtools/utils/WifiTestUtil;->mWifiManager:Landroid/net/wifi/WifiManager;
 
-    invoke-virtual {v0}, Landroid/net/wifi/WifiManager;->isWifiEnabled()Z
+    invoke-static {v0}, Lcom/sprd/validationtools/Safe;->wifiEnabled(Landroid/net/wifi/WifiManager;)Z
 
     move-result v0
 
@@ -390,7 +390,7 @@
     .line 77
     iget-object v1, p0, Lcom/sprd/validationtools/utils/WifiTestUtil;->mWifiManager:Landroid/net/wifi/WifiManager;
 
-    invoke-virtual {v1, v0}, Landroid/net/wifi/WifiManager;->setWifiEnabled(Z)Z
+    invoke-static {v1, v0}, Lcom/sprd/validationtools/Safe;->setWifiEnabled(Landroid/net/wifi/WifiManager;Z)Z
 
     .line 79
     :goto_0
@@ -418,7 +418,7 @@
 
     iget-object v2, p0, Lcom/sprd/validationtools/utils/WifiTestUtil;->mWifiManager:Landroid/net/wifi/WifiManager;
 
-    invoke-virtual {v2}, Landroid/net/wifi/WifiManager;->isWifiEnabled()Z
+    invoke-static {v2}, Lcom/sprd/validationtools/Safe;->wifiEnabled(Landroid/net/wifi/WifiManager;)Z
 
     move-result v2
 
@@ -437,7 +437,7 @@
 
     const/4 v1, 0x0
 
-    invoke-virtual {v0, v1}, Landroid/net/wifi/WifiManager;->setWifiEnabled(Z)Z
+    invoke-static {v0, v1}, Lcom/sprd/validationtools/Safe;->setWifiEnabled(Landroid/net/wifi/WifiManager;Z)Z
 
     .line 86
     return-void

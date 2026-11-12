@@ -139,7 +139,7 @@
     if-eqz v1, :cond_0
 
     .line 187
-    invoke-virtual {v1, v5}, Landroid/telephony/TelephonyManager;->getMeid(I)Ljava/lang/String;
+    invoke-static {v1, v5}, Lcom/sprd/validationtools/Safe;->meid(Landroid/telephony/TelephonyManager;I)Ljava/lang/String;
 
     move-result-object v8
 
@@ -489,7 +489,7 @@
     if-eqz v9, :cond_8
 
     .line 164
-    invoke-virtual {v1, v5}, Landroid/telephony/TelephonyManager;->getDeviceId(I)Ljava/lang/String;
+    invoke-static {v1, v5}, Lcom/sprd/validationtools/Safe;->deviceId(Landroid/telephony/TelephonyManager;I)Ljava/lang/String;
 
     move-result-object v9
 

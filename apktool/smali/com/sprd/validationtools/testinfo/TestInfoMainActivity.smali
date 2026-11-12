@@ -896,7 +896,7 @@
 
     .line 452
     .local v1, "bluetoothAdapter":Landroid/bluetooth/BluetoothAdapter;
-    invoke-virtual {v1}, Landroid/bluetooth/BluetoothAdapter;->getAddress()Ljava/lang/String;
+    invoke-static {v1}, Lcom/sprd/validationtools/Safe;->btAddress(Landroid/bluetooth/BluetoothAdapter;)Ljava/lang/String;
 
     move-result-object v3
 

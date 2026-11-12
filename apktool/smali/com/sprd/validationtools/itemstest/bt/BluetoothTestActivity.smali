@@ -238,7 +238,7 @@
 
     move-result-object v2
 
-    invoke-virtual {v2}, Landroid/bluetooth/BluetoothAdapter;->getAddress()Ljava/lang/String;
+    invoke-static {v2}, Lcom/sprd/validationtools/Safe;->btAddress(Landroid/bluetooth/BluetoothAdapter;)Ljava/lang/String;
 
     move-result-object v2
 

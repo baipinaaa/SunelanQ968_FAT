@@ -221,7 +221,7 @@
     if-ge p1, v1, :cond_0
 
     .line 74
-    invoke-virtual {v0, p1}, Landroid/telephony/TelephonyManager;->getDeviceId(I)Ljava/lang/String;
+    invoke-static {v0, p1}, Lcom/sprd/validationtools/Safe;->deviceId(Landroid/telephony/TelephonyManager;I)Ljava/lang/String;
 
     move-result-object v2
 
