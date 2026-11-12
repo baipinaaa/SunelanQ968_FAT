@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:text="@string/app_name" style="@style/Text_IMEI" />
+    <TextView android:id="@+id/header" style="@style/Text_IMEI" />
+    <LinearLayout android:orientation="vertical" android:id="@+id/layout1" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <TextView android:text="@string/keytest" style="@style/Text_Title" />
+        <TextView android:text="@string/ContinueTest" style="@style/Text_Command" />
+        <TextView android:text="@string/BackTest" style="@style/Text_Command" />
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:id="@+id/layout3" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <TextView android:id="@+id/keytestfinished" android:text="@string/keytestfinished" style="@style/Text_Message" />
+        <TextView android:id="@+id/ContinueTest" android:layout_marginTop="5dp" android:text="@string/ContinueTest" style="@style/Text_Command" />
+    </LinearLayout>
+    <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@+id/layout2" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp">
+        <TextView android:id="@+id/keytest_title" android:text="@string/keytest" style="@style/Text_Title" />
+        <TextView android:id="@+id/keypress" android:visibility="gone" android:text="@string/keypress" style="@style/Text_Remark" />
+        <TextView android:id="@+id/keynotpress" android:visibility="gone" android:text="@string/keynotpress" style="@style/Text_Remark" />
+        <LinearLayout android:orientation="vertical" android:id="@+id/keypresslayout" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="horizontal" android:background="#666666" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <TextView android:textSize="14sp" android:gravity="center" android:layout_gravity="center" android:id="@+id/VolUp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginLeft="2dp" android:layout_weight="1" />
+                <TextView android:textSize="14sp" android:gravity="center" android:layout_gravity="center" android:id="@+id/Back" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginLeft="2dp" android:layout_weight="1" />
+                <TextView android:textSize="14sp" android:gravity="center" android:layout_gravity="center" android:id="@+id/VolDown" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginLeft="2dp" android:layout_weight="1" />
+            </LinearLayout>
+            <GridLayout android:layout_gravity="center_horizontal" android:id="@+id/id_keys_container" android:background="#666666" android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="3" />
+            <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="0dp">
+                <TextView android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="2" />
+                <TextView android:textSize="16sp" android:layout_gravity="center" android:id="@+id/Enter" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="0dp" />
+                <TextView android:layout_width="0sp" android:layout_height="0dp" android:layout_weight="1" />
+                <TextView android:textSize="16sp" android:layout_gravity="center" android:id="@+id/Menu" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="0dp" />
+                <TextView android:layout_width="0sp" android:layout_height="0dp" android:layout_weight="2" />
+            </LinearLayout>
+            <TextView android:textSize="16sp" android:layout_gravity="center" android:id="@+id/Search" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="0dp" />
+        </LinearLayout>
+        <TextView android:id="@+id/TrackBallUp" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_x="110px" android:layout_y="140px" />
+        <TextView android:id="@+id/TrackBallLeft" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_x="10px" android:layout_y="200px" />
+        <TextView android:id="@+id/TrackBallCentre" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_x="110px" android:layout_y="200px" />
+        <TextView android:id="@+id/TrackBallRight" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_x="210px" android:layout_y="200px" />
+        <TextView android:id="@+id/TrackBallDown" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_x="110px" android:layout_y="260px" />
+        <TextView android:id="@+id/Power" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_x="0px" android:layout_y="190px" />
+        <TextView android:id="@+id/PTT" android:background="#666666" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_x="10px" android:layout_y="560px" />
+    </LinearLayout>
+</LinearLayout>

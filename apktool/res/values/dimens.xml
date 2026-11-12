@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="camera_ctlbar_heoght">120.0dp</dimen>
+    <dimen name="headset_text_size">24.0sp</dimen>
+    <dimen name="list_item_height">80.0dp</dimen>
+    <dimen name="list_item_text_size">23.0sp</dimen>
+    <dimen name="lookback_bottom_size">200.0dp</dimen>
+    <dimen name="pass_fail_button_size">120.0dp</dimen>
+    <dimen name="pass_fail_button_text_size">30.0sp</dimen>
+    <dimen name="qrcode_bitmap_height">200.0dp</dimen>
+    <dimen name="qrcode_bitmap_width">200.0dp</dimen>
+    <dimen name="rf_cali_scroll_height">330.0dp</dimen>
+    <dimen name="tof_text_size">16.0sp</dimen>
+    <dimen name="wifi_scroll_height">300.0dp</dimen>
+</resources>

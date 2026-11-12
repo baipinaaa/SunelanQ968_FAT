@@ -1,0 +1,11 @@
+# build outputs
+*.apk
+*.idsig
+*.apk.idsig
+signed/
+dist/
+out/
+# apktool cache
+apktool/build/
+# our dev keystore is NOT committed
+*.jks

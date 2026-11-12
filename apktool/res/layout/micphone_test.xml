@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView android:gravity="center" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_above="@+id/buttonslinear">
+        <TextView android:textSize="22sp" android:id="@+id/micphone_msg" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/phone_loopback_test_notice" />
+    </ScrollView>
+    <LinearLayout android:orientation="horizontal" android:id="@+id/buttonslinear" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="@dimen/lookback_bottom_size" android:layout_alignParentBottom="true">
+        <RadioGroup android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <RadioButton android:enabled="false" android:id="@+id/radio_speaker" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/phoneloopback_speaker" android:layout_weight="1" />
+            <RadioButton android:enabled="false" android:id="@+id/radio_earpiece" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/phoneloopback_earpiece" android:layout_weight="1" />
+            <RadioButton android:enabled="false" android:id="@+id/radio3_earpiece" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/phoneloopback3_earpiece" android:layout_weight="1" />
+        </RadioGroup>
+    </LinearLayout>
+</RelativeLayout>

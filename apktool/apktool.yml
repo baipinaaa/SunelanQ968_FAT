@@ -1,0 +1,19 @@
+version: 3.0.3
+apkFileName: 工厂测试工具_1.0.apk
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: 33
+  targetSdkVersion: 33
+versionInfo:
+  versionCode: 1
+  versionName: 1.0
+resourcesInfo:
+  packageId: 127
+  keepRawValues: true
+doNotCompress:
+- arsc
+- dex
+- png
+- wav
