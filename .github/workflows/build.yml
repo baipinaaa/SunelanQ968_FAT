@@ -40,16 +40,17 @@ jobs:
       - name: Sign
         run: |
           java -jar /tmp/uber-apk-signer.jar \
-            --apks dist/fat-unsigned.apk \
+            -a dist/fat-unsigned.apk \
             --ks keys/dev.jks --ksAlias devkey \
             --ksPass dev123456 --ksKeyPass dev123456 \
-            --ksDebug false -o dist
+            -o dist
           ls -l dist/
 
       - name: Rename artifact
         run: |
           set -e
-          src=$(ls dist/*signed*.apk | head -1)
+          src=$(ls dist/*-aligned-signed.apk | head -1)
+          test -n "$src"
           dst="dist/SunelanQ968_FAT-v1.0.${GITHUB_RUN_NUMBER}.apk"
           cp "$src" "$dst"
           ls -l "$dst"
@@ -57,7 +58,9 @@ jobs:
 
       - name: Verify signature
         run: |
-          unzip -l "$APK_PATH" | head -5
+          set -e
+          java -jar /tmp/uber-apk-signer.jar -y -a "$APK_PATH"
+          unzip -l "$APK_PATH" | grep -E 'META-INF/.*\.(SF|RSA)' 
           sha256sum "$APK_PATH"
 
       - name: Create release
