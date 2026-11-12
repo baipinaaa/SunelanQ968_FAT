@@ -150,7 +150,7 @@
     .line 159
     sget-object v2, Lcom/sprd/validationtools/utils/IATUtils;->AT_OK:Ljava/lang/String;
 
-    invoke-virtual {v0, v2}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    invoke-static {v0, v2}, Lcom/sprd/validationtools/Safe;->contains(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
 
     move-result v2
 

@@ -118,7 +118,8 @@
     return-void
 .end method
 
-.method private doPlay()V
+.method private doPlay()V    :ts_doplay
+
     .locals 6
 
     .line 116
@@ -279,6 +280,15 @@
 
     .line 158
     return-void
+
+    :te_doplay
+    .catch Ljava/lang/Throwable; {:ts_doplay .. :te_doplay} :ck_doplay
+
+    return-void
+
+    :ck_doplay
+    return-void
+
 .end method
 
 .method private getRandom(I)I
@@ -336,7 +346,8 @@
     return-void
 .end method
 
-.method protected onCreate(Landroid/os/Bundle;)V
+.method protected onCreate(Landroid/os/Bundle;)V    :ts_oncreate
+
     .locals 4
     .param p1, "savedInstanceState"    # Landroid/os/Bundle;
 
@@ -446,6 +457,15 @@
 
     .line 94
     return-void
+
+    :te_oncreate
+    .catch Ljava/lang/Throwable; {:ts_oncreate .. :te_oncreate} :ck_oncreate
+
+    return-void
+
+    :ck_oncreate
+    return-void
+
 .end method
 
 .method public onDestroy()V

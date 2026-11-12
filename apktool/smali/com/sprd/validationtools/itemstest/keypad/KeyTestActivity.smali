@@ -800,7 +800,8 @@
     return-void
 .end method
 
-.method protected onCreate(Landroid/os/Bundle;)V
+.method protected onCreate(Landroid/os/Bundle;)V    :ts_oncreate
+
     .locals 4
     .param p1, "savedInstanceState"    # Landroid/os/Bundle;
 
@@ -1080,6 +1081,15 @@
     :cond_5
     :goto_3
     return-void
+
+    :te_oncreate
+    .catch Ljava/lang/Throwable; {:ts_oncreate .. :te_oncreate} :ck_oncreate
+
+    return-void
+
+    :ck_oncreate
+    return-void
+
 .end method
 
 .method protected onDestroy()V

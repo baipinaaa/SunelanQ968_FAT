@@ -269,7 +269,7 @@
 
     .line 164
     .local v1, "mWifiManager":Landroid/net/wifi/WifiManager;
-    invoke-virtual {v1}, Landroid/net/wifi/WifiManager;->getFactoryMacAddresses()[Ljava/lang/String;
+    invoke-static {v1}, Lcom/sprd/validationtools/Safe;->wifiFactoryMac(Landroid/net/wifi/WifiManager;)[Ljava/lang/String;
 
     move-result-object v2
 

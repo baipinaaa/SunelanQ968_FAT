@@ -123,7 +123,7 @@
 
     move-result-object v1
 
-    invoke-virtual {v1}, Landroid/bluetooth/BluetoothAdapter;->enable()Z
+    invoke-static {v1}, Lcom/sprd/validationtools/Safe;->btEnable(Landroid/bluetooth/BluetoothAdapter;)Z
 
     .line 144
     nop

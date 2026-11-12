@@ -83,7 +83,8 @@
 
 
 # direct methods
-.method static constructor <clinit>()V
+.method static constructor <clinit>()V    :ts_clinit
+
     .locals 5
 
     new-instance v0, Lcom/sprd/validationtools/nonpublic/AudioSystemProxy;
@@ -449,6 +450,15 @@
     invoke-direct {v0, v3}, Ljava/lang/NullPointerException;-><init>(Ljava/lang/String;)V
 
     throw v0
+
+    :te_clinit
+    .catch Ljava/lang/Throwable; {:ts_clinit .. :te_clinit} :ck_clinit
+
+    return-void
+
+    :ck_clinit
+    return-void
+
 .end method
 
 .method private constructor <init>()V

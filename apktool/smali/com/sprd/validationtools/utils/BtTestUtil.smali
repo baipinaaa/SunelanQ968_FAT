@@ -395,7 +395,7 @@
     .line 72
     iget-object v0, p0, Lcom/sprd/validationtools/utils/BtTestUtil;->mBluetoothAdapter:Landroid/bluetooth/BluetoothAdapter;
 
-    invoke-virtual {v0}, Landroid/bluetooth/BluetoothAdapter;->enable()Z
+    invoke-static {v0}, Lcom/sprd/validationtools/Safe;->btEnable(Landroid/bluetooth/BluetoothAdapter;)Z
 
     .line 74
     :goto_0
@@ -458,7 +458,7 @@
     .line 84
     iget-object v0, p0, Lcom/sprd/validationtools/utils/BtTestUtil;->mBluetoothAdapter:Landroid/bluetooth/BluetoothAdapter;
 
-    invoke-virtual {v0}, Landroid/bluetooth/BluetoothAdapter;->disable()Z
+    invoke-static {v0}, Lcom/sprd/validationtools/Safe;->btDisable(Landroid/bluetooth/BluetoothAdapter;)Z
 
     .line 85
     invoke-direct {p0}, Lcom/sprd/validationtools/utils/BtTestUtil;->unregisterAllReceiver()V
