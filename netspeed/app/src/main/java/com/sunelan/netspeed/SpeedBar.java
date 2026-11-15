@@ -26,6 +26,7 @@ final class SpeedBar {
         }
         ViewParent rawParent = battery.getParent();
         if (!(rawParent instanceof ViewGroup)) {
+            Log.i(NetspeedModule.TAG, "attach skipped: parent=" + rawParent);
             return;
         }
         ViewGroup group = (ViewGroup) rawParent;
@@ -34,6 +35,9 @@ final class SpeedBar {
                 .getIdentifier(ICON_CONTAINER_ID, "id", "com.android.systemui");
         if (containerId == 0 || group.getId() != containerId) {
             // Not the status bar icon container (keyguard, quick settings, ...): ignore.
+            Log.i(NetspeedModule.TAG, "attach skipped: group id 0x"
+                    + Integer.toHexString(group.getId())
+                    + " != system_icons 0x" + Integer.toHexString(containerId));
             return;
         }
         for (int i = 0; i < group.getChildCount(); i++) {

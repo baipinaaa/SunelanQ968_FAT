@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -89,12 +90,37 @@ public class NetspeedModule extends XposedModule {
             return;
         }
         final View view = (View) created;
-        view.post(() -> {
+        // The view has no parent yet while it is being inflated, and BatteryMeterView does not
+        // override onAttachedToWindow, so listen for the attach callback instead of guessing.
+        view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+                try {
+                    SpeedBar.attach(v);
+                } catch (Throwable t) {
+                    log(Log.WARN, TAG, "attach failed", t);
+                }
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                // nothing to do
+            }
+        });
+        retryAttach(view, 0);
+    }
+
+    private void retryAttach(View view, int attempt) {
+        if (view.getParent() instanceof ViewGroup) {
             try {
                 SpeedBar.attach(view);
             } catch (Throwable t) {
                 log(Log.WARN, TAG, "attach failed", t);
             }
-        });
+            return;
+        }
+        if (attempt < 20) {
+            view.postDelayed(() -> retryAttach(view, attempt + 1), 100L);
+        }
     }
 }
