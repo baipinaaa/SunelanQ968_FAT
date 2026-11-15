@@ -30,19 +30,19 @@ public class NetspeedModule extends XposedModule {
             return;
         }
         ClassLoader cl = param.getDefaultClassLoader();
-        if (hookFrameLayoutAttach(cl)) {
-            return;
-        }
+        // BatteryMeterView and FrameLayout both inherit onAttachedToWindow from View without
+        // overriding it, so the declaring class is View: hook it and filter by class name.
+        hookViewAttach(cl);
         hookBatteryConstructors(cl);
     }
 
-    private boolean hookFrameLayoutAttach(ClassLoader cl) {
+    private boolean hookViewAttach(ClassLoader cl) {
         final Method attach;
         try {
-            Class<?> frameLayout = Class.forName("android.widget.FrameLayout", false, cl);
-            attach = frameLayout.getDeclaredMethod("onAttachedToWindow");
+            Class<?> viewClass = Class.forName("android.view.View", false, cl);
+            attach = viewClass.getDeclaredMethod("onAttachedToWindow");
         } catch (Throwable t) {
-            log(Log.WARN, TAG, "FrameLayout.onAttachedToWindow not hookable", t);
+            log(Log.WARN, TAG, "View.onAttachedToWindow not hookable", t);
             return false;
         }
         hook(attach).intercept(chain -> {
@@ -57,7 +57,7 @@ public class NetspeedModule extends XposedModule {
             }
             return result;
         });
-        log(Log.INFO, TAG, "hooked FrameLayout.onAttachedToWindow for " + BATTERY_CLASS);
+        log(Log.INFO, TAG, "hooked View.onAttachedToWindow for " + BATTERY_CLASS);
         return true;
     }
 
