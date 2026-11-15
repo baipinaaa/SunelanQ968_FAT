@@ -45,7 +45,7 @@ public class NetspeedModule extends XposedModule {
         } catch (NoSuchMethodException e) {
             return false;
         }
-        hook(attach).setId("netspeed-battery-attach").intercept(chain -> {
+        hook(attach).intercept(chain -> {
             Object result = chain.proceed();
             try {
                 SpeedBar.attach((View) chain.getThisObject());
@@ -61,7 +61,7 @@ public class NetspeedModule extends XposedModule {
     private void hookConstructors(Class<?> battery) {
         try {
             Constructor<?> ctor = battery.getDeclaredConstructor(Context.class, AttributeSet.class);
-            hook(ctor).setId("netspeed-battery-ctor").intercept(chain -> {
+            hook(ctor).intercept(chain -> {
                 Object created = chain.proceed();
                 postAttach(created);
                 return created;
@@ -73,7 +73,7 @@ public class NetspeedModule extends XposedModule {
         }
         try {
             Constructor<?> ctor = battery.getDeclaredConstructor(Context.class, AttributeSet.class, int.class);
-            hook(ctor).setId("netspeed-battery-ctor3").intercept(chain -> {
+            hook(ctor).intercept(chain -> {
                 Object created = chain.proceed();
                 postAttach(created);
                 return created;
