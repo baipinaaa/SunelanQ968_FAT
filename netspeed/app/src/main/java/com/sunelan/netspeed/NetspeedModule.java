@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -15,6 +14,9 @@ import io.github.libxposed.api.XposedModuleInterface;
 /**
  * Entry point of the module. Runs inside com.android.systemui and inserts the network speed
  * view right before the BatteryMeterView in the status bar icon container.
+ * <p>
+ * BatteryMeterView does not override {@code onAttachedToWindow}, so the parent FrameLayout method
+ * is hooked instead: at that point the view is really attached and {@code getParent()} is valid.
  */
 public class NetspeedModule extends XposedModule {
 
@@ -28,39 +30,45 @@ public class NetspeedModule extends XposedModule {
             return;
         }
         ClassLoader cl = param.getDefaultClassLoader();
-        try {
-            Class<?> battery = Class.forName(BATTERY_CLASS, false, cl);
-            if (hookAttachCallback(battery)) {
-                return;
-            }
-            hookConstructors(battery);
-        } catch (Throwable t) {
-            log(Log.ERROR, TAG, "failed to hook " + BATTERY_CLASS, t);
+        if (hookFrameLayoutAttach(cl)) {
+            return;
         }
+        hookBatteryConstructors(cl);
     }
 
-    private boolean hookAttachCallback(Class<?> battery) {
+    private boolean hookFrameLayoutAttach(ClassLoader cl) {
         final Method attach;
         try {
-            attach = battery.getDeclaredMethod("onAttachedToWindow");
-        } catch (NoSuchMethodException e) {
+            Class<?> frameLayout = Class.forName("android.widget.FrameLayout", false, cl);
+            attach = frameLayout.getDeclaredMethod("onAttachedToWindow");
+        } catch (Throwable t) {
+            log(Log.WARN, TAG, "FrameLayout.onAttachedToWindow not hookable", t);
             return false;
         }
         hook(attach).intercept(chain -> {
             Object result = chain.proceed();
-            try {
-                SpeedBar.attach((View) chain.getThisObject());
-            } catch (Throwable t) {
-                log(Log.WARN, TAG, "attach failed", t);
+            Object self = chain.getThisObject();
+            if (self instanceof View && isBatteryView((View) self)) {
+                try {
+                    SpeedBar.attach((View) self);
+                } catch (Throwable t) {
+                    log(Log.WARN, TAG, "attach failed", t);
+                }
             }
             return result;
         });
-        log(Log.INFO, TAG, "hooked " + BATTERY_CLASS + ".onAttachedToWindow()");
+        log(Log.INFO, TAG, "hooked FrameLayout.onAttachedToWindow for " + BATTERY_CLASS);
         return true;
     }
 
-    private void hookConstructors(Class<?> battery) {
+    private static boolean isBatteryView(View view) {
+        String name = view.getClass().getName();
+        return BATTERY_CLASS.equals(name) || name.endsWith(".BatteryMeterView");
+    }
+
+    private void hookBatteryConstructors(ClassLoader cl) {
         try {
+            Class<?> battery = Class.forName(BATTERY_CLASS, false, cl);
             Constructor<?> ctor = battery.getDeclaredConstructor(Context.class, AttributeSet.class);
             hook(ctor).intercept(chain -> {
                 Object created = chain.proceed();
@@ -68,20 +76,8 @@ public class NetspeedModule extends XposedModule {
                 return created;
             });
             log(Log.INFO, TAG, "hooked " + BATTERY_CLASS + " constructor (context, attrs)");
-            return;
-        } catch (NoSuchMethodException ignored) {
-            // fall through
-        }
-        try {
-            Constructor<?> ctor = battery.getDeclaredConstructor(Context.class, AttributeSet.class, int.class);
-            hook(ctor).intercept(chain -> {
-                Object created = chain.proceed();
-                postAttach(created);
-                return created;
-            });
-            log(Log.INFO, TAG, "hooked " + BATTERY_CLASS + " constructor (context, attrs, style)");
         } catch (Throwable t) {
-            log(Log.ERROR, TAG, "no usable BatteryMeterView constructor", t);
+            log(Log.ERROR, TAG, "failed to hook " + BATTERY_CLASS, t);
         }
     }
 
@@ -90,8 +86,6 @@ public class NetspeedModule extends XposedModule {
             return;
         }
         final View view = (View) created;
-        // The view has no parent yet while it is being inflated, and BatteryMeterView does not
-        // override onAttachedToWindow, so listen for the attach callback instead of guessing.
         view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -107,20 +101,5 @@ public class NetspeedModule extends XposedModule {
                 // nothing to do
             }
         });
-        retryAttach(view, 0);
-    }
-
-    private void retryAttach(View view, int attempt) {
-        if (view.getParent() instanceof ViewGroup) {
-            try {
-                SpeedBar.attach(view);
-            } catch (Throwable t) {
-                log(Log.WARN, TAG, "attach failed", t);
-            }
-            return;
-        }
-        if (attempt < 20) {
-            view.postDelayed(() -> retryAttach(view, attempt + 1), 100L);
-        }
     }
 }
