@@ -85,6 +85,8 @@ public class NetSpeedView extends View {
         super.onDetachedFromWindow();
     }
 
+    private static final String WIDEST_TEXT = "1024 MB/s";
+
     private void sample() {
         long rx = TrafficStats.getTotalRxBytes();
         long tx = TrafficStats.getTotalTxBytes();
@@ -107,6 +109,8 @@ public class NetSpeedView extends View {
         lastSampleAt = now;
         upText = formatSpeed(txBytesPerSecond);
         downText = formatSpeed(rxBytesPerSecond);
+        upTextWidth = textPaint.measureText(upText);
+        downTextWidth = textPaint.measureText(downText);
         if ((++ticks % 30) == 0) {
             StatsCollector.collectAsync(getContext());
         }
@@ -124,7 +128,10 @@ public class NetSpeedView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         upTextWidth = textPaint.measureText(upText);
         downTextWidth = textPaint.measureText(downText);
-        float maxText = Math.max(upTextWidth, downTextWidth);
+        // Reserve room for the widest possible value so the view never gets clipped and the
+        // battery / other icons do not shift when the speed changes.
+        float maxText = Math.max(textPaint.measureText(WIDEST_TEXT),
+                Math.max(upTextWidth, downTextWidth));
         int desiredWidth = (int) Math.ceil(maxText + arrowWidth * 1.7f + density * 2f)
                 + getPaddingLeft() + getPaddingRight();
         int desiredHeight = (int) Math.ceil(lineHeight * 2f) + getPaddingTop() + getPaddingBottom();
