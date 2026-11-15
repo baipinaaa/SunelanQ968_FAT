@@ -1,6 +1,10 @@
 package com.sunelan.netspeed;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +25,10 @@ import io.github.libxposed.api.XposedModuleInterface;
 public class NetspeedModule extends XposedModule {
 
     static final String TAG = "NetSpeed";
+    static final String ACTION_REFRESH = "com.sunelan.netspeed.ACTION_REFRESH";
+
+    private static Context appContext;
+    private static BroadcastReceiver refreshReceiver;
     private static final String SYSTEMUI_PKG = "com.android.systemui";
     private static final String BATTERY_CLASS = "com.android.systemui.battery.BatteryMeterView";
 
@@ -34,6 +42,35 @@ public class NetspeedModule extends XposedModule {
         // overriding it, so the declaring class is View: hook it and filter by class name.
         hookViewAttach(cl);
         hookBatteryConstructors(cl);
+    }
+
+    /**
+     * SystemUI cannot be started by the module's own activity, so the activity broadcasts a refresh
+     * request and this receiver answers it by collecting the statistics right away.
+     */
+    static void ensureRefreshReceiver(Context context) {
+        if (refreshReceiver != null || context == null) {
+            return;
+        }
+        Context app = context.getApplicationContext();
+        appContext = app != null ? app : context;
+        refreshReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                StatsCollector.collectAsync(appContext);
+            }
+        };
+        try {
+            IntentFilter filter = new IntentFilter(ACTION_REFRESH);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                appContext.registerReceiver(refreshReceiver, filter, Context.RECEIVER_EXPORTED);
+            } else {
+                appContext.registerReceiver(refreshReceiver, filter);
+            }
+            log(Log.INFO, TAG, "refresh receiver registered");
+        } catch (Throwable t) {
+            log(Log.WARN, TAG, "cannot register refresh receiver", t);
+        }
     }
 
     private boolean hookViewAttach(ClassLoader cl) {

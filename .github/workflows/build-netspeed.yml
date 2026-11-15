@@ -35,25 +35,8 @@ jobs:
           cp "$APK" netspeed-apk.apk
           ls -l netspeed-apk.apk
 
-      - name: Package KernelSU module (WebUI only)
-        working-directory: netspeed
-        run: |
-          set -e
-          rm -rf out
-          mkdir -p out
-          cp -a module/. out/
-          test -f out/webroot/index.html
-          (cd out && zip -r9 ../netspeed-module.zip . >/dev/null)
-          unzip -l netspeed-module.zip
-
       - uses: actions/upload-artifact@v4
         with:
           name: netspeed-apk
           path: netspeed/netspeed-apk.apk
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: netspeed-module
-          path: netspeed/netspeed-module.zip
           if-no-files-found: error

@@ -8,6 +8,23 @@
     <application
         android:allowBackup="false"
         android:label="网速模块"
-        android:supportsRtl="true" />
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="网速模块">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name=".NetspeedProvider"
+            android:authorities="com.sunelan.netspeed.stats"
+            android:exported="true" />
+    </application>
 
 </manifest>

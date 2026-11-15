@@ -17,19 +17,22 @@ import java.util.Locale;
 /**
  * Two line network speed indicator: upload on top with an up arrow right next to the number,
  * download below with a down arrow shifted a bit further right (so both arrows are staggered).
+ * Colors and text size come from {@link SettingsStore}.
  */
-public class NetSpeedView extends View {
+public class NetSpeedView extends View implements SettingsStore.Listener {
 
-    private static final int TEXT_COLOR = 0xE6FFFFFF;
+    private static final String WIDEST_TEXT = "1024 MB/s";
 
-    private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint upPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint downPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint arrowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path arrowPath = new Path();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final float density;
-    private final float lineHeight;
-    private final float arrowWidth;
-    private final float textSize;
+
+    private float textSize;
+    private float lineHeight;
+    private float arrowWidth;
 
     private String upText = "0 kB/s";
     private String downText = "0 kB/s";
@@ -45,25 +48,56 @@ public class NetSpeedView extends View {
     public NetSpeedView(Context context) {
         super(context);
         density = context.getResources().getDisplayMetrics().density;
-        textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 9f,
-                context.getResources().getDisplayMetrics());
-        lineHeight = textSize * 1.18f;
-        arrowWidth = textSize * 0.72f;
+        textSize = spToPx(ThemeConfig.DEFAULT_TEXT_SIZE);
+        updateMetrics();
 
-        textPaint.setColor(TEXT_COLOR);
-        textPaint.setTextSize(textSize);
-        textPaint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-
-        arrowPaint.setColor(TEXT_COLOR);
+        Typeface typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL);
+        upPaint.setTypeface(typeface);
+        downPaint.setTypeface(typeface);
         arrowPaint.setStyle(Paint.Style.STROKE);
-        arrowPaint.setStrokeWidth(Math.max(1f, textSize * 0.12f));
         arrowPaint.setStrokeCap(Paint.Cap.ROUND);
         arrowPaint.setStrokeJoin(Paint.Join.ROUND);
+        apply(SettingsStore.get());
 
         setWillNotDraw(false);
         // Start sampling right away: onAttachedToWindow is not always reached when the status bar
         // is rebuilt, and the ticker stops itself once the view is detached.
         handler.post(ticker);
+    }
+
+    private float spToPx(float sp) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp,
+                getResources().getDisplayMetrics());
+    }
+
+    private void updateMetrics() {
+        lineHeight = textSize * 1.18f;
+        arrowWidth = textSize * 0.72f;
+        upPaint.setTextSize(textSize);
+        downPaint.setTextSize(textSize);
+        arrowPaint.setStrokeWidth(Math.max(1f, textSize * 0.12f));
+    }
+
+    @Override
+    public void onSettingsChanged(ThemeConfig.Values values) {
+        apply(values);
+    }
+
+    private void apply(ThemeConfig.Values values) {
+        if (values == null) {
+            values = ThemeConfig.Values.defaults();
+        }
+        upPaint.setColor(values.upColor);
+        downPaint.setColor(values.downColor);
+        arrowPaint.setColor(values.arrowColor);
+        float newSize = spToPx(values.textSize);
+        if (Math.abs(newSize - textSize) > 0.01f) {
+            textSize = newSize;
+            updateMetrics();
+            requestLayout();
+        }
+        setVisibility(values.enabled ? VISIBLE : GONE);
+        invalidate();
     }
 
     private final Runnable ticker = new Runnable() {
@@ -78,17 +112,17 @@ public class NetSpeedView extends View {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        SettingsStore.addListener(this);
         handler.removeCallbacks(ticker);
         handler.post(ticker);
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        SettingsStore.removeListener(this);
         handler.removeCallbacks(ticker);
         super.onDetachedFromWindow();
     }
-
-    private static final String WIDEST_TEXT = "1024 MB/s";
 
     private void sample() {
         long rx = TrafficStats.getTotalRxBytes();
@@ -112,12 +146,8 @@ public class NetSpeedView extends View {
         lastSampleAt = now;
         upText = formatSpeed(txBytesPerSecond);
         downText = formatSpeed(rxBytesPerSecond);
-        upTextWidth = textPaint.measureText(upText);
-        downTextWidth = textPaint.measureText(downText);
-        ticks++;
-        if (ticks == 1 || (ticks % 30) == 0) {
-            StatsCollector.collectAsync(getContext());
-        }
+        upTextWidth = upPaint.measureText(upText);
+        downTextWidth = downPaint.measureText(downText);
     }
 
     static String formatSpeed(double bytesPerSecond) {
@@ -130,11 +160,11 @@ public class NetSpeedView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        upTextWidth = textPaint.measureText(upText);
-        downTextWidth = textPaint.measureText(downText);
+        upTextWidth = upPaint.measureText(upText);
+        downTextWidth = downPaint.measureText(downText);
         // Reserve room for the widest possible value so the view never gets clipped and the
         // battery / other icons do not shift when the speed changes.
-        float maxText = Math.max(textPaint.measureText(WIDEST_TEXT),
+        float maxText = Math.max(upPaint.measureText(WIDEST_TEXT),
                 Math.max(upTextWidth, downTextWidth));
         int desiredWidth = (int) Math.ceil(maxText + arrowWidth * 2.2f + density * 2f)
                 + getPaddingLeft() + getPaddingRight();
@@ -153,14 +183,14 @@ public class NetSpeedView extends View {
         float top = getPaddingTop();
         float centerUp = top + lineHeight * 0.5f;
         float centerDown = top + lineHeight * 1.5f;
-        float baseUp = centerUp - (textPaint.descent() + textPaint.ascent()) / 2f;
-        float baseDown = centerDown - (textPaint.descent() + textPaint.ascent()) / 2f;
+        float baseUp = centerUp - (upPaint.descent() + upPaint.ascent()) / 2f;
+        float baseDown = centerDown - (downPaint.descent() + downPaint.ascent()) / 2f;
 
-        canvas.drawText(upText, left, baseUp, textPaint);
+        canvas.drawText(upText, left, baseUp, upPaint);
         float upArrowX = left + upTextWidth + density * 1.0f;
         drawArrow(canvas, upArrowX, centerUp, true);
 
-        canvas.drawText(downText, left, baseDown, textPaint);
+        canvas.drawText(downText, left, baseDown, downPaint);
         // Staggered: the down arrow sits a little to the right of the up arrow.
         float downArrowX = left + downTextWidth + density * 1.0f + arrowWidth * 0.85f;
         drawArrow(canvas, downArrowX, centerDown, false);

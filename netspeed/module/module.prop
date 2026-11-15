@@ -1,6 +1,0 @@
-id=netspeed_statusbar
-name=状态栏网速·流量统计
-version=v1.0
-versionCode=1
-author=sunelan
-description=在状态栏电池左侧显示上下行实时网速（双行+错位箭头），并提供各 APP 流量统计 WebUI。安装后需在 LSPosed 中启用本模块并勾选 SystemUI 作用域。

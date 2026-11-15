@@ -46,7 +46,11 @@ final class SpeedBar {
             }
         }
 
-        NetSpeedView speedView = new NetSpeedView(battery.getContext());
+        android.content.Context context = battery.getContext();
+        SettingsStore.install(context);
+        NetspeedModule.ensureRefreshReceiver(context);
+
+        NetSpeedView speedView = new NetSpeedView(context);
         int index = group.indexOfChild(battery);
         if (index < 0) {
             index = group.getChildCount();

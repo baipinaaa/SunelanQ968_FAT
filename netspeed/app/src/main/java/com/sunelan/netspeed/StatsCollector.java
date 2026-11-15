@@ -2,6 +2,7 @@ package com.sunelan.netspeed;
 
 import android.app.usage.NetworkStats;
 import android.app.usage.NetworkStatsManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -11,10 +12,6 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 final class StatsCollector {
 
     private static final String TAG = "NetSpeed";
-    private static final String FILE_NAME = "netspeed_stats.json";
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "NetSpeedStats");
         thread.setDaemon(true);
@@ -62,7 +58,7 @@ final class StatsCollector {
         });
     }
 
-    private static void collect(Context context) throws IOException {
+    private static void collect(Context context) {
         long now = System.currentTimeMillis();
         long startOfDay = startOfToday();
 
@@ -123,31 +119,14 @@ final class StatsCollector {
             return;
         }
 
-        File dir = context.getFilesDir();
-        if (dir == null) {
-            Log.w(TAG, "getFilesDir() returned null");
-            return;
+        ContentValues values = new ContentValues();
+        values.put(NetspeedProvider.COLUMN_JSON, root.toString());
+        try {
+            context.getContentResolver().insert(NetspeedProvider.STATS_URI, values);
+            Log.i(TAG, "stats written: apps=" + apps.length());
+        } catch (Throwable t) {
+            Log.w(TAG, "cannot publish stats", t);
         }
-        if (!dir.exists() && !dir.mkdirs()) {
-            Log.w(TAG, "cannot create " + dir);
-            return;
-        }
-        File target = new File(dir, FILE_NAME);
-        File temp = new File(dir, FILE_NAME + ".tmp");
-        try (FileOutputStream out = new FileOutputStream(temp)) {
-            out.write(root.toString().getBytes(StandardCharsets.UTF_8));
-            out.getFD().sync();
-        }
-        if (target.exists() && !target.delete()) {
-            Log.w(TAG, "cannot delete old stats file");
-        }
-        if (!temp.renameTo(target)) {
-            Log.w(TAG, "cannot rename stats file");
-            return;
-        }
-        //noinspection ResultOfMethodCallIgnored
-        target.setReadable(true, false);
-        Log.i(TAG, "stats written: apps=" + apps.length() + " file=" + target);
     }
 
     private static void readType(NetworkStatsManager manager, int networkType, long start, long end,
