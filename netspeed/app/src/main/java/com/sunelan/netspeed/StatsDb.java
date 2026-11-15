@@ -47,7 +47,8 @@ final class StatsDb extends SQLiteOpenHelper {
     }
 
     Cursor days() {
-        return getReadableDatabase().query("daily", new String[]{"day", "rx", "tx", "updated"},
+        return getReadableDatabase().query("daily",
+                new String[]{"day", "rx", "tx", "apps", "updated"},
                 null, null, null, null, "day DESC");
     }
 

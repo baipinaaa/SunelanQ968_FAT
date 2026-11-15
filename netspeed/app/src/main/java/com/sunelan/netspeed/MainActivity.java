@@ -398,18 +398,19 @@ public class MainActivity extends Activity {
     private void loadHistory() {
         long rx = 0L;
         long tx = 0L;
-        List<String[]> rows = new ArrayList<>();
+        List<Object[]> rows = new ArrayList<>();
         try (android.database.Cursor cursor = getContentResolver().query(
                 NetspeedProvider.HISTORY_URI, null, null, null, null)) {
             if (cursor != null) {
                 int dayIndex = cursor.getColumnIndex("day");
                 int rxIndex = cursor.getColumnIndex("rx");
                 int txIndex = cursor.getColumnIndex("tx");
+                int appsIndex = cursor.getColumnIndex("apps");
                 while (cursor.moveToNext()) {
                     long dayRx = cursor.getLong(rxIndex);
                     long dayTx = cursor.getLong(txIndex);
-                    rows.add(new String[]{cursor.getString(dayIndex), formatBytes(dayRx),
-                            formatBytes(dayTx)});
+                    rows.add(new Object[]{cursor.getString(dayIndex), formatBytes(dayRx),
+                            formatBytes(dayTx), cursor.getString(appsIndex)});
                     rx += dayRx;
                     tx += dayTx;
                 }
@@ -427,27 +428,71 @@ public class MainActivity extends Activity {
             historyContainer.addView(emptyLine("还没有历史记录，联网后会自动累积。"));
             return;
         }
-        for (String[] row : rows) {
-            LinearLayout line = new LinearLayout(this);
-            line.setOrientation(LinearLayout.HORIZONTAL);
-            line.setPadding(0, dp(7), 0, dp(7));
-
-            TextView day = new TextView(this);
-            day.setText(row[0]);
-            day.setTextColor(TEXT_PRIMARY);
-            day.setTextSize(13f);
-
-            TextView nums = new TextView(this);
-            nums.setText("↓" + row[1] + "   ↑" + row[2]);
-            nums.setTextColor(TEXT_MUTED);
-            nums.setTextSize(11f);
-            nums.setPadding(dp(12), 0, 0, 0);
-
-            line.addView(day, new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-            line.addView(nums);
-            historyContainer.addView(line);
+        for (Object[] row : rows) {
+            historyContainer.addView(historyDayItem((String) row[0], (String) row[1],
+                    (String) row[2], (String) row[3]));
         }
+    }
+
+    private View historyDayItem(String day, String rx, String tx, String appsJson) {
+        LinearLayout item = new LinearLayout(this);
+        item.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setPadding(0, dp(8), 0, dp(8));
+
+        TextView dayView = new TextView(this);
+        dayView.setText(day + "  ▸");
+        dayView.setTextColor(TEXT_PRIMARY);
+        dayView.setTextSize(13f);
+
+        TextView nums = new TextView(this);
+        nums.setText("↓" + rx + "   ↑" + tx);
+        nums.setTextColor(TEXT_MUTED);
+        nums.setTextSize(11f);
+        nums.setPadding(dp(12), 0, 0, 0);
+
+        header.addView(dayView, new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        header.addView(nums);
+
+        LinearLayout detail = new LinearLayout(this);
+        detail.setOrientation(LinearLayout.VERTICAL);
+        detail.setPadding(dp(10), 0, 0, dp(8));
+        detail.setVisibility(View.GONE);
+
+        List<JSONObject> apps = new ArrayList<>();
+        try {
+            JSONArray array = appsJson == null ? null : new JSONArray(appsJson);
+            if (array != null) {
+                for (int i = 0; i < array.length(); i++) {
+                    apps.add(array.getJSONObject(i));
+                }
+            }
+        } catch (Throwable ignored) {
+            // corrupt row, show empty
+        }
+        apps.sort(Comparator.comparingLong((JSONObject o) ->
+                o.optLong("rx") + o.optLong("tx")).reversed());
+        if (apps.isEmpty()) {
+            detail.addView(emptyLine("当天没有应用记录。"));
+        } else {
+            for (int i = 0; i < Math.min(apps.size(), 10); i++) {
+                detail.addView(appRow(apps.get(i)));
+            }
+        }
+
+        header.setOnClickListener(v -> {
+            boolean open = detail.getVisibility() == View.VISIBLE;
+            detail.setVisibility(open ? View.GONE : View.VISIBLE);
+            dayView.setText(day + (open ? "  ▸" : "  ▾"));
+        });
+
+        item.addView(header);
+        item.addView(detail);
+        return item;
     }
 
     private View appRow(JSONObject app) {

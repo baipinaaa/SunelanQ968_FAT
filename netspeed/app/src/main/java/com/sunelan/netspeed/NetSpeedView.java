@@ -21,7 +21,7 @@ import java.util.Locale;
  */
 public class NetSpeedView extends View implements SettingsStore.Listener {
 
-    private static final String WIDEST_TEXT = "1024 MB/s";
+    private static final String WIDEST_TEXT = "999.9 MB/s";
 
     private final Paint upPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint downPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -29,6 +29,8 @@ public class NetSpeedView extends View implements SettingsStore.Listener {
     private final Path arrowPath = new Path();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final float density;
+    /** Arrow column reserved on the right; the text is right aligned against it. */
+    private static final float ARROW_AREA_FACTOR = 1.9f;
 
     private float textSize;
     private float lineHeight;
@@ -166,7 +168,7 @@ public class NetSpeedView extends View implements SettingsStore.Listener {
         // battery / other icons do not shift when the speed changes.
         float maxText = Math.max(upPaint.measureText(WIDEST_TEXT),
                 Math.max(upTextWidth, downTextWidth));
-        int desiredWidth = (int) Math.ceil(maxText + arrowWidth * 2.2f + density * 2f)
+        int desiredWidth = (int) Math.ceil(maxText + ARROW_AREA_FACTOR * arrowWidth + density * 1.5f)
                 + getPaddingLeft() + getPaddingRight();
         int desiredHeight = (int) Math.ceil(lineHeight * 2f) + getPaddingTop() + getPaddingBottom();
         if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST) {
@@ -179,21 +181,22 @@ public class NetSpeedView extends View implements SettingsStore.Listener {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        float left = getPaddingLeft();
         float top = getPaddingTop();
+        // Both numbers end on the same vertical line and the arrows never move: a longer value
+        // grows to the left instead of pushing the arrow to the right.
+        float contentRight = getWidth() - getPaddingRight() - arrowWidth * ARROW_AREA_FACTOR;
         float centerUp = top + lineHeight * 0.5f;
         float centerDown = top + lineHeight * 1.5f;
         float baseUp = centerUp - (upPaint.descent() + upPaint.ascent()) / 2f;
         float baseDown = centerDown - (downPaint.descent() + downPaint.ascent()) / 2f;
 
-        canvas.drawText(upText, left, baseUp, upPaint);
-        float upArrowX = left + upTextWidth + density * 1.0f;
+        canvas.drawText(upText, contentRight - upTextWidth, baseUp, upPaint);
+        float upArrowX = contentRight + density * 0.5f;
         drawArrow(canvas, upArrowX, centerUp, true);
 
-        canvas.drawText(downText, left, baseDown, downPaint);
+        canvas.drawText(downText, contentRight - downTextWidth, baseDown, downPaint);
         // Staggered: the down arrow sits a little to the right of the up arrow.
-        float downArrowX = left + downTextWidth + density * 1.0f + arrowWidth * 0.85f;
-        drawArrow(canvas, downArrowX, centerDown, false);
+        drawArrow(canvas, upArrowX + arrowWidth * 0.85f, centerDown, false);
     }
 
     private void drawArrow(Canvas canvas, float x, float centerY, boolean up) {
