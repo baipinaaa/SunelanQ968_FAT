@@ -61,6 +61,9 @@ public class NetSpeedView extends View {
         arrowPaint.setStrokeJoin(Paint.Join.ROUND);
 
         setWillNotDraw(false);
+        // Start sampling right away: onAttachedToWindow is not always reached when the status bar
+        // is rebuilt, and the ticker stops itself once the view is detached.
+        handler.post(ticker);
     }
 
     private final Runnable ticker = new Runnable() {
@@ -111,7 +114,8 @@ public class NetSpeedView extends View {
         downText = formatSpeed(rxBytesPerSecond);
         upTextWidth = textPaint.measureText(upText);
         downTextWidth = textPaint.measureText(downText);
-        if ((++ticks % 30) == 0) {
+        ticks++;
+        if (ticks == 1 || (ticks % 30) == 0) {
             StatsCollector.collectAsync(getContext());
         }
     }

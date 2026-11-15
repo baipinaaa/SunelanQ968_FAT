@@ -47,6 +47,7 @@ final class StatsCollector {
 
     static void collectAsync(Context context) {
         if (context == null || !BUSY.compareAndSet(false, true)) {
+            Log.i(TAG, "collect skipped (busy or no context)");
             return;
         }
         final Context app = context.getApplicationContext();
@@ -124,6 +125,11 @@ final class StatsCollector {
 
         File dir = context.getFilesDir();
         if (dir == null) {
+            Log.w(TAG, "getFilesDir() returned null");
+            return;
+        }
+        if (!dir.exists() && !dir.mkdirs()) {
+            Log.w(TAG, "cannot create " + dir);
             return;
         }
         File target = new File(dir, FILE_NAME);
@@ -141,6 +147,7 @@ final class StatsCollector {
         }
         //noinspection ResultOfMethodCallIgnored
         target.setReadable(true, false);
+        Log.i(TAG, "stats written: apps=" + apps.length() + " file=" + target);
     }
 
     private static void readType(NetworkStatsManager manager, int networkType, long start, long end,
