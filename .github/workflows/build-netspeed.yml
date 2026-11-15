@@ -1,0 +1,47 @@
+name: build-netspeed
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Build module APK
+        working-directory: netspeed
+        run: gradle :app:assembleRelease --no-daemon --stacktrace
+
+      - name: Package KernelSU module
+        working-directory: netspeed
+        run: |
+          set -e
+          APK=$(find app/build/outputs/apk/release -name '*.apk' | head -1)
+          test -n "$APK"
+          echo "APK=$APK"
+          rm -rf out
+          mkdir -p out/files out/webroot
+          cp -a module/. out/
+          cp "$APK" out/files/netspeed.apk
+          (cd out && zip -r9 ../netspeed-module.zip . >/dev/null)
+          ls -l netspeed-module.zip
+          unzip -l netspeed-module.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: netspeed-module
+          path: netspeed/netspeed-module.zip
+          if-no-files-found: error

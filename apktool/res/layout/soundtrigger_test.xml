@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <Button android:textSize="17dip" android:layout_gravity="center" android:id="@+id/btn_start" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="200dip" android:layout_marginBottom="70dp" android:text="@string/start_soundtrigger" />
-    <TextView android:textSize="28dp" android:layout_gravity="center" android:id="@+id/txt_note" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/start_soundtrigger" android:layout_alignParentBottom="true" />
-</LinearLayout>
