@@ -183,12 +183,12 @@ public class MainActivity extends Activity {
     private View colorRow(String key, int selected) {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setPadding(dp(10), dp(10), dp(10), dp(10));
+        row.setPadding(dp(8), dp(10), dp(8), dp(10));
         row.setBackground(cardBackground());
         for (int color : ThemeConfig.PALETTE) {
             View swatch = new View(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp(30), dp(30));
-            params.setMargins(dp(4), 0, dp(4), 0);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(26), 1f);
+            params.setMargins(dp(2), 0, dp(2), 0);
             swatch.setLayoutParams(params);
             swatch.setBackground(dot(color, color == selected));
             swatch.setOnClickListener(v -> {
