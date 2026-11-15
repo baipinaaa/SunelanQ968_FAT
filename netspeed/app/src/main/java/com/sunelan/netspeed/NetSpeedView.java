@@ -132,7 +132,7 @@ public class NetSpeedView extends View {
         // battery / other icons do not shift when the speed changes.
         float maxText = Math.max(textPaint.measureText(WIDEST_TEXT),
                 Math.max(upTextWidth, downTextWidth));
-        int desiredWidth = (int) Math.ceil(maxText + arrowWidth * 1.7f + density * 2f)
+        int desiredWidth = (int) Math.ceil(maxText + arrowWidth * 2.2f + density * 2f)
                 + getPaddingLeft() + getPaddingRight();
         int desiredHeight = (int) Math.ceil(lineHeight * 2f) + getPaddingTop() + getPaddingBottom();
         if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST) {
@@ -153,12 +153,12 @@ public class NetSpeedView extends View {
         float baseDown = centerDown - (textPaint.descent() + textPaint.ascent()) / 2f;
 
         canvas.drawText(upText, left, baseUp, textPaint);
-        float upArrowX = left + upTextWidth + density * 0.7f;
+        float upArrowX = left + upTextWidth + density * 1.0f;
         drawArrow(canvas, upArrowX, centerUp, true);
 
         canvas.drawText(downText, left, baseDown, textPaint);
         // Staggered: the down arrow sits a little to the right of the up arrow.
-        float downArrowX = left + downTextWidth + density * 0.7f + arrowWidth * 0.45f;
+        float downArrowX = left + downTextWidth + density * 1.0f + arrowWidth * 0.85f;
         drawArrow(canvas, downArrowX, centerDown, false);
     }
 
