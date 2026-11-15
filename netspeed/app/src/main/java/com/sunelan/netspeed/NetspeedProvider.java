@@ -9,6 +9,12 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * Tiny bridge between the configuration activity (this process) and the Xposed hook that runs
  * inside {@code com.android.systemui}:
@@ -24,6 +30,7 @@ public class NetspeedProvider extends ContentProvider {
     public static final String AUTHORITY = "com.sunelan.netspeed.stats";
     public static final Uri SETTINGS_URI = Uri.parse("content://" + AUTHORITY + "/settings");
     public static final Uri STATS_URI = Uri.parse("content://" + AUTHORITY + "/stats");
+    public static final Uri HISTORY_URI = Uri.parse("content://" + AUTHORITY + "/history");
 
     public static final String COLUMN_KEY = "key";
     public static final String COLUMN_VALUE = "value";
@@ -32,19 +39,25 @@ public class NetspeedProvider extends ContentProvider {
 
     private static final int MATCH_SETTINGS = 1;
     private static final int MATCH_STATS = 2;
+    private static final int MATCH_HISTORY = 3;
+    private static final String DAY_PATTERN = "yyyy-MM-dd";
+    private static final SimpleDateFormat DAY_FORMAT = new SimpleDateFormat(DAY_PATTERN, Locale.US);
 
     private static final UriMatcher MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         MATCHER.addURI(AUTHORITY, "settings", MATCH_SETTINGS);
         MATCHER.addURI(AUTHORITY, "stats", MATCH_STATS);
+        MATCHER.addURI(AUTHORITY, "history", MATCH_HISTORY);
     }
 
     private SharedPreferences prefs;
+    private StatsDb db;
 
     @Override
     public boolean onCreate() {
         prefs = getContext().getSharedPreferences(ThemeConfig.PREFS, Context.MODE_PRIVATE);
+        db = new StatsDb(getContext());
         return true;
     }
 
@@ -64,6 +77,8 @@ public class NetspeedProvider extends ContentProvider {
                 cursor.addRow(new Object[]{prefs.getString(STATS_JSON_KEY, "")});
                 return cursor;
             }
+            case MATCH_HISTORY:
+                return db.days();
             default:
                 return null;
         }
@@ -75,6 +90,7 @@ public class NetspeedProvider extends ContentProvider {
             String json = values.getAsString(COLUMN_JSON);
             if (json != null) {
                 prefs.edit().putString(STATS_JSON_KEY, json).apply();
+                recordDay(json);
                 notifyChanged(uri);
                 return uri;
             }
@@ -96,6 +112,25 @@ public class NetspeedProvider extends ContentProvider {
             }
         }
         return 0;
+    }
+
+    /**
+     * The history is append-only: every sample replaces the row of its own day, so the numbers of
+     * a day always mirror what the system reported most recently and older days are kept forever.
+     */
+    private void recordDay(String json) {
+        try {
+            JSONObject root = new JSONObject(json);
+            long dayStart = root.optLong("dayStart", 0L);
+            if (dayStart <= 0L) {
+                dayStart = System.currentTimeMillis();
+            }
+            String day = DAY_FORMAT.format(new Date(dayStart));
+            db.record(day, root.optLong("totalRx"), root.optLong("totalTx"),
+                    root.optJSONArray("apps") == null ? "[]" : root.optJSONArray("apps").toString());
+        } catch (Throwable ignored) {
+            // Malformed payloads must never break the hook that is writing them.
+        }
     }
 
     private static void applySetting(SharedPreferences.Editor editor, String key, String value) {
@@ -136,6 +171,8 @@ public class NetspeedProvider extends ContentProvider {
                 return "vnd.android.cursor.dir/vnd.com.sunelan.netspeed.settings";
             case MATCH_STATS:
                 return "vnd.android.cursor.item/vnd.com.sunelan.netspeed.stats";
+            case MATCH_HISTORY:
+                return "vnd.android.cursor.dir/vnd.com.sunelan.netspeed.history";
             default:
                 return null;
         }

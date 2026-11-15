@@ -67,9 +67,9 @@ public class NetspeedModule extends XposedModule {
             } else {
                 appContext.registerReceiver(refreshReceiver, filter);
             }
-            Log.i(TAG, "refresh receiver registered");
+            log(Log.INFO, TAG, "refresh receiver registered");
         } catch (Throwable t) {
-            Log.w(TAG, "cannot register refresh receiver", t);
+            log(Log.WARN, TAG, "cannot register refresh receiver", t);
         }
     }
 

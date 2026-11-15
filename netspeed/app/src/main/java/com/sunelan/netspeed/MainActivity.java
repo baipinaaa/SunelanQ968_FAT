@@ -41,6 +41,8 @@ public class MainActivity extends Activity {
     private LinearLayout listContainer;
     private TextView totalRxView;
     private TextView totalTxView;
+    private TextView historyTotalView;
+    private LinearLayout historyContainer;
     private TextView previewUpView;
     private TextView previewDownView;
     private TextView sizeValueView;
@@ -114,6 +116,21 @@ public class MainActivity extends Activity {
         listContainer.setBackground(cardBackground());
         root.addView(listContainer);
 
+        root.addView(sectionTitle("历史记录（永久保存，不清除）"));
+
+        historyTotalView = new TextView(this);
+        historyTotalView.setTextColor(TEXT_PRIMARY);
+        historyTotalView.setTextSize(13f);
+        historyTotalView.setPadding(dp(14), dp(11), dp(14), dp(11));
+        historyTotalView.setBackground(cardBackground());
+        root.addView(historyTotalView);
+
+        historyContainer = new LinearLayout(this);
+        historyContainer.setOrientation(LinearLayout.VERTICAL);
+        historyContainer.setPadding(dp(14), dp(4), dp(14), dp(4));
+        historyContainer.setBackground(cardBackground());
+        root.addView(historyContainer);
+
         TextView hint = new TextView(this);
         hint.setText("各应用流量由 SystemUI 通过 NetworkStatsManager 统计，打开本页会请求一次刷新。"
                 + "若列表为空，请确认已联网，并在 LSPosed 中启用本模块、作用域勾选 SystemUI。");
@@ -135,6 +152,7 @@ public class MainActivity extends Activity {
         super.onResume();
         requestRefresh();
         loadStats();
+        loadHistory();
     }
 
     private View header(String title, String subtitle) {
@@ -374,6 +392,61 @@ public class MainActivity extends Activity {
         } catch (Throwable t) {
             listContainer.removeAllViews();
             listContainer.addView(emptyLine("统计数据解析失败。"));
+        }
+    }
+
+    private void loadHistory() {
+        long rx = 0L;
+        long tx = 0L;
+        List<String[]> rows = new ArrayList<>();
+        try (android.database.Cursor cursor = getContentResolver().query(
+                NetspeedProvider.HISTORY_URI, null, null, null, null)) {
+            if (cursor != null) {
+                int dayIndex = cursor.getColumnIndex("day");
+                int rxIndex = cursor.getColumnIndex("rx");
+                int txIndex = cursor.getColumnIndex("tx");
+                while (cursor.moveToNext()) {
+                    long dayRx = cursor.getLong(rxIndex);
+                    long dayTx = cursor.getLong(txIndex);
+                    rows.add(new String[]{cursor.getString(dayIndex), formatBytes(dayRx),
+                            formatBytes(dayTx)});
+                    rx += dayRx;
+                    tx += dayTx;
+                }
+            }
+        } catch (Throwable ignored) {
+            // provider not ready yet
+        }
+        if (historyTotalView == null || historyContainer == null) {
+            return;
+        }
+        historyTotalView.setText("总计  ↓" + formatBytes(rx) + "   ↑" + formatBytes(tx)
+                + "   共 " + rows.size() + " 天");
+        historyContainer.removeAllViews();
+        if (rows.isEmpty()) {
+            historyContainer.addView(emptyLine("还没有历史记录，联网后会自动累积。"));
+            return;
+        }
+        for (String[] row : rows) {
+            LinearLayout line = new LinearLayout(this);
+            line.setOrientation(LinearLayout.HORIZONTAL);
+            line.setPadding(0, dp(7), 0, dp(7));
+
+            TextView day = new TextView(this);
+            day.setText(row[0]);
+            day.setTextColor(TEXT_PRIMARY);
+            day.setTextSize(13f);
+
+            TextView nums = new TextView(this);
+            nums.setText("↓" + row[1] + "   ↑" + row[2]);
+            nums.setTextColor(TEXT_MUTED);
+            nums.setTextSize(11f);
+            nums.setPadding(dp(12), 0, 0, 0);
+
+            line.addView(day, new LinearLayout.LayoutParams(0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+            line.addView(nums);
+            historyContainer.addView(line);
         }
     }
 
